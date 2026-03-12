@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusBuddy AI · about · award‑winning design</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Inter + Clash Display for award edge -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7f7f5;
+            color: #111;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+        }
+
+        /* typography */
+        .section-title {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: #000;
+        }
+
+        .section-sub {
+            font-size: 1.4rem;
+            color: #2e2e2e;
+            border-left: 8px solid #111;
+            padding-left: 2rem;
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+
+        /* ---- STICKY NAV (elevated) ---- */
+        .navbar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 3rem;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 2px solid #111;
+            z-index: 100;
+            font-weight: 500;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #000, #3b3b3b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #111;
+            font-weight: 500;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: #111;
+            transition: width 0.25s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: #111;
+            color: #fff !important;
+            padding: 0.7rem 2.2rem;
+            border-radius: 50px;
+            border: 2px solid #111;
+            transition: 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: transparent;
+            color: #111 !important;
+        }
+
+        .nav-cta::after {
+            display: none;
+        }
+
+        /* ---- HERO (about) ---- */
+        .about-hero {
+            padding: 5rem 0 4rem;
+            background: #fff;
+            border-bottom: 3px solid #111;
+        }
+
+        .about-hero h1 {
+            font-size: 5.5rem;
+            font-weight: 800;
+            line-height: 1;
+            max-width: 1200px;
+            letter-spacing: -0.03em;
+        }
+
+        .about-hero .lead {
+            font-size: 1.8rem;
+            color: #222;
+            margin: 2.5rem 0 1rem;
+            max-width: 900px;
+            border-left: 10px solid #111;
+            padding-left: 2.5rem;
+        }
+
+        /* ---- STORY GRID (bold offset) ---- */
+        .story-grid {
+            display: flex;
+            gap: 5rem;
+            margin: 7rem 0;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .story-text {
+            flex: 1;
+            min-width: 320px;
+        }
+
+        .story-text h2 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.8rem;
+        }
+
+        .story-text p {
+            font-size: 1.3rem;
+            color: #2d2d2d;
+            margin-bottom: 1.8rem;
+        }
+
+        .story-image {
+            flex: 1;
+            border-radius: 70px;
+            overflow: hidden;
+            border: 3px solid #111;
+            filter: grayscale(1);
+            box-shadow: 35px 35px 0 #111;
+            transition: 0.3s;
+        }
+
+        .story-image:hover {
+            box-shadow: 25px 25px 0 #111;
+            transform: translate(10px, 10px);
+        }
+
+        .story-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ---- STATS BANNER (brutalist) ---- */
+        .stats-banner {
+            background: #111;
+            color: #fff;
+            padding: 4.5rem 3rem;
+            border-radius: 200px;
+            margin: 6rem 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            border: 3px solid #fff;
+            box-shadow: 0 40px 0 #aaa;
+        }
+
+        .stat-block {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #ccc;
+        }
+
+        /* ---- TIMELINE (sculptural) ---- */
+        .timeline {
+            margin: 7rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            align-items: flex-start;
+        }
+
+        .timeline-year {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #fff;
+            background: #111;
+            padding: 0.8rem 2.5rem;
+            border-radius: 120px;
+            border: 3px solid #111;
+            min-width: 240px;
+            text-align: center;
+            box-shadow: 12px 12px 0 #888;
+        }
+
+        .timeline-desc {
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 70px;
+            padding: 2.2rem 3rem;
+            flex: 1;
+            box-shadow: 20px 20px 0 #111;
+            transition: 0.2s;
+        }
+
+        .timeline-desc:hover {
+            transform: translate(-8px, -8px);
+            box-shadow: 28px 28px 0 #111;
+        }
+
+        .timeline-desc h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-desc p {
+            font-size: 1.2rem;
+            color: #2b2b2b;
+        }
+
+        /* ---- TEAM CARDS (dynamic) ---- */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            margin: 5rem 0;
+        }
+
+        .team-card {
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 60px;
+            padding: 2.5rem 2rem;
+            box-shadow: 18px 18px 0 #111;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .team-card:hover {
+            transform: translate(-10px, -10px);
+            box-shadow: 28px 28px 0 #111;
+        }
+
+        .team-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            border: 4px solid #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #111;
+        }
+
+        .team-card h3 {
+            font-size: 2.3rem;
+            font-weight: 800;
+        }
+
+        .team-card .role {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #444;
+            border-bottom: 2px solid #111;
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .team-card p {
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        /* ---- VALUES (iconic) ---- */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin: 5rem 0;
+        }
+
+        .value-item {
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 60px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 14px 14px 0 #111;
+            transition: 0.2s;
+        }
+
+        .value-item:hover {
+            transform: scale(1.02) translate(-5px, -5px);
+            box-shadow: 20px 20px 0 #111;
+        }
+
+        .value-item i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #111;
+        }
+
+        .value-item h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        /* ---- CTA MINI (black/white) ---- */
+        .about-cta {
+            background: #111;
+            color: #fff;
+            padding: 5rem 4rem;
+            border-radius: 150px;
+            margin: 6rem 0;
+            text-align: center;
+            border: 3px solid #fff;
+            box-shadow: 0 30px 0 #888;
+        }
+
+        .about-cta h2 {
+            font-size: 4rem;
+            font-weight: 800;
+        }
+
+        .about-cta .btn {
+            background: #fff;
+            color: #111;
+            border: 2px solid #fff;
+            padding: 1.2rem 4rem;
+            border-radius: 80px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: inline-block;
+            margin-top: 2rem;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .about-cta .btn:hover {
+            background: transparent;
+            color: #fff;
+        }
+
+        /* ---- FOOTER (bold) ---- */
+        .footer {
+            background: #111;
+            color: #ccc;
+            padding: 4rem 0 2rem;
+            border-top: 5px solid #fff;
+            margin-top: 6rem;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 3rem;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 2px solid #333;
+            font-size: 1rem;
+        }
+
+        /* GSAP fade-up initial */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        /* responsiveness */
+        @media (max-width: 1000px) {
+            .team-grid { grid-template-columns: repeat(2,1fr); }
+            .values-grid { grid-template-columns: repeat(2,1fr); }
+            .about-hero h1 { font-size: 4rem; }
+        }
+        @media (max-width: 700px) {
+            .team-grid, .values-grid { grid-template-columns: 1fr; }
+            .timeline-item { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+
+
+<!-- HERO SECTION (about) -->
+<section class="about-hero">
+    <div class="container">
+        <h1 class="fade-up">We are FocusBuddy.<br>Building the future of studying.</h1>
+        <p class="lead fade-up">Founded in 2024 to replace chaos with calm. AI that plans, coaches, and motivates — trusted by over 150,000 students worldwide.</p>
+    </div>
+</section>
+
+<!-- STORY GRID (offset / award style) -->
+<div class="container">
+    <div class="story-grid">
+        <div class="story-text fade-up">
+            <h2>From dorm room to global stage</h2>
+            <p>Two students, one shared frustration: study tools were either too complicated or useless. So we built an AI that feels like a real coach. Within months, FocusBuddy became the hidden gem of university libraries.</p>
+            <p>In 2026, we received the Global EdTech Award for “Most Innovative AI Study Tool”. But our real trophy? The 150,000+ learners who reclaimed their time.</p>
+        </div>
+        <div class="story-image fade-up">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" alt="students studying together" style="filter: grayscale(1);">
+        </div>
+    </div>
+</div>
+
+<!-- STATS BANNER (impact) -->
+<div class="container">
+    <div class="stats-banner">
+        <div class="stat-block"><div class="stat-num">150K+</div><div class="stat-label">students</div></div>
+        <div class="stat-block"><div class="stat-num">44</div><div class="stat-label">countries</div></div>
+        <div class="stat-block"><div class="stat-num">2.9M</div><div class="stat-label">hours saved</div></div>
+        <div class="stat-block"><div class="stat-num">99%</div><div class="stat-label">focus boost</div></div>
+    </div>
+</div>
+
+<!-- TIMELINE (milestones) -->
+<div class="container">
+    <h2 class="section-title fade-up">Our path</h2>
+    <div class="section-sub fade-up">Key moments that defined us.</div>
+
+    <div class="timeline">
+        <div class="timeline-item fade-up">
+            <div class="timeline-year">2024</div>
+            <div class="timeline-desc"><h3>Birth of the idea</h3><p>First lines of code written in a Stanford library. 100 beta testers within a week — all strangers.</p></div>
+        </div>
+        <div class="timeline-item fade-up">
+            <div class="timeline-year">2025</div>
+            <div class="timeline-desc"><h3>Public launch</h3><p>Opened to everyone. 10k users in 30 days. We knew we were onto something.</p></div>
+        </div>
+        <div class="timeline-item fade-up">
+            <div class="timeline-year">2026</div>
+            <div class="timeline-desc"><h3>Award & beyond</h3><p>Winner EdTech Awards 2026. Now powering 150k+ students, from high school to PhD.</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- TEAM SECTION (bold) -->
+<div class="container">
+    <h2 class="section-title fade-up">Human behind the AI</h2>
+    <div class="section-sub fade-up">We're builders, learners, and dreamers.</div>
+
+    <div class="team-grid">
+        <div class="team-card fade-up">
+            <div class="team-avatar"><i class="fas fa-user-astronaut"></i></div>
+            <h3>Alex Chen</h3>
+            <div class="role">Co-founder & CEO</div>
+            <p>Ex‑researcher at Stanford AI Lab. Dropped out to fix study tools forever.</p>
+        </div>
+        <div class="team-card fade-up">
+            <div class="team-avatar"><i class="fas fa-user-ninja"></i></div>
+            <h3>Jordan Rivera</h3>
+            <div class="role">Head of AI</div>
+            <p>Machine learning engineer, previously leading personalization at Duolingo.</p>
+        </div>
+        <div class="team-card fade-up">
+            <div class="team-avatar"><i class="fas fa-user-graduate"></i></div>
+            <h3>Taylor Smith</h3>
+            <div class="role">Product & Design</div>
+            <p>Designed learning tools for Khan Academy. Obsessed with pixel‑perfect calm.</p>
+        </div>
+    </div>
+</div>
+
+<!-- VALUES (icons with heavy border) -->
+<div class="container">
+    <h2 class="section-title fade-up">What we stand for</h2>
+    <div class="values-grid">
+        <div class="value-item fade-up"><i class="fas fa-brain"></i><h3>Simplicity</h3><p>No noise. Just smart planning.</p></div>
+        <div class="value-item fade-up"><i class="fas fa-chart-line"></i><h3>Real results</h3><p>We measure what matters: focus.</p></div>
+        <div class="value-item fade-up"><i class="fas fa-hand-holding-heart"></i><h3>Student first</h3><p>Built by students, for students.</p></div>
+    </div>
+</div>
+
+<!-- MINI CTA (about page specific) -->
+<div class="container">
+    <div class="about-cta fade-up">
+        <h2>Ready to transform your study habits?</h2>
+        <a href="#" class="btn">Join FocusBuddy today →</a>
+    </div>
+</div>
+
+<!-- FOOTER -->
+
+
+<!-- GSAP MAGIC (scroll animations) -->
+<script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    window.addEventListener('load', () => {
+        // fade up elements
+        gsap.utils.toArray('.fade-up').forEach(el => {
+            gsap.fromTo(el, 
+                { opacity: 0, y: 70 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.4,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 80%',
+                        end: 'top 40%',
+                        toggleActions: 'play none none reverse'
+                    }
+                }
+            );
+        });
+
+        // counter animation for stats
+        gsap.from('.stat-num', {
+            scrollTrigger: '.stats-banner',
+            textContent: 0,
+            duration: 2.5,
+            snap: { textContent: 1 },
+            stagger: 0.3,
+            modifiers: {
+                textContent: (value, target) => {
+                    const original = target.innerText;
+                    if (original.includes('K+')) return Math.round(value) + 'K+';
+                    else if (original.includes('%')) return Math.round(value) + '%';
+                    else if (original.includes('M')) return Math.round(value/100000) / 10 + 'M';
+                    else return Math.round(value);
+                }
+            }
+        });
+
+        // extra parallax for story image? not needed but nice
+        gsap.from('.story-image', {
+            scrollTrigger: '.story-grid',
+            x: 40,
+            opacity: 0.5,
+            duration: 1.5,
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusBuddy · analytics · study insights</title>
+    <!-- Chart.js CDN (lightweight, but we could also do pure CSS; but real data is nicer) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f0ea;
+            color: #111;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ----- NAVIGATION (consistent) ----- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2.5rem;
+            background: #ffffff;
+            border-bottom: 4px solid #111;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 0 #111;
+            margin-bottom: 0.8rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            text-decoration: none;
+            color: #111;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #111;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.3rem 0;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-links a:hover {
+            border-bottom-color: #111;
+        }
+
+        .nav-links .active {
+            border-bottom-color: #111;
+        }
+
+        .btn-nav {
+            background: #111;
+            color: #fff !important;
+            padding: 0.6rem 2rem !important;
+            border-radius: 50px;
+            border: 2px solid #111;
+        }
+
+        .btn-nav:hover {
+            background: transparent;
+            color: #111 !important;
+        }
+
+        /* ----- PAGE HEADER ----- */
+        .page-header {
+            margin: 2rem 0 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 4.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            background: #111;
+            color: #fff;
+            display: inline-block;
+            padding: 0.4rem 2rem 0.4rem 2rem;
+            border-radius: 120px;
+            border: 3px solid #111;
+            box-shadow: 12px 12px 0 #888;
+            margin-bottom: 1rem;
+        }
+
+        .page-desc {
+            font-size: 1.5rem;
+            border-left: 8px solid #111;
+            padding-left: 2rem;
+            color: #222;
+            max-width: 800px;
+        }
+
+        /* ----- STATS ROW (overlapping blocks) ----- */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.8rem;
+            margin: 3rem 0 3rem;
+        }
+
+        .stat-block {
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 50px;
+            padding: 2rem 1rem;
+            box-shadow: 14px 14px 0 #111;
+            transition: 0.15s;
+            text-align: center;
+            position: relative;
+        }
+
+        .stat-block:not(:first-child) {
+            margin-left: -1.2rem;
+        }
+
+        .stats-row:hover .stat-block {
+            box-shadow: 8px 8px 0 #111;
+        }
+
+        .stat-block:hover {
+            transform: translateY(-6px) translateX(-4px);
+            box-shadow: 20px 20px 0 #111;
+            z-index: 5;
+        }
+
+        .stat-number {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #333;
+        }
+
+        /* ----- CHARTS GRID (overlapping cards) ----- */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 3rem 0 4rem;
+        }
+
+        .chart-card {
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 50px;
+            padding: 2rem 1.8rem 2.2rem;
+            box-shadow: 16px 16px 0 #111;
+            transition: 0.15s;
+            position: relative;
+        }
+
+        .chart-card:not(:first-child) {
+            margin-left: -1rem;
+        }
+
+        .charts-grid:hover .chart-card {
+            box-shadow: 10px 10px 0 #111;
+        }
+
+        .chart-card:hover {
+            transform: scale(1.01) translateY(-6px) translateX(-4px);
+            box-shadow: 24px 24px 0 #111;
+            z-index: 10;
+        }
+
+        .chart-title {
+            font-size: 2rem;
+            font-weight: 700;
+            border-bottom: 3px solid #111;
+            padding-bottom: 1rem;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        canvas {
+            max-height: 260px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ----- FOCUS BREAKDOWN (extra) ----- */
+        .breakdown-card {
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 70px;
+            padding: 2.5rem;
+            box-shadow: 18px 18px 0 #111;
+            margin: 3rem 0 3rem;
+        }
+
+        .breakdown-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            border-bottom: 3px solid #111;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .progress-label {
+            width: 150px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .progress-bar-bg {
+            flex: 1;
+            height: 30px;
+            background: #ddd;
+            border: 2px solid #111;
+            border-radius: 40px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #111;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-percent {
+            font-weight: 700;
+            font-size: 1.3rem;
+            min-width: 60px;
+        }
+
+        /* footer */
+        .footer {
+            background: #111;
+            color: #bbb;
+            padding: 2.5rem 0;
+            border-top: 5px solid #fff;
+            margin-top: 4rem;
+        }
+
+        .footer .container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 1000px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-block:not(:first-child) {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="logo">📊 FocusBuddy AI</a>
+        <div class="nav-links">
+            <a href="#">Dashboard</a>
+            <a href="#">Tasks</a>
+            <a href="#">Schedule</a>
+            <a href="#" class="active">Analytics</a>
+            <a href="#" class="btn-nav">Logout</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <h1>📈 analytics</h1>
+                <div class="page-desc">your study patterns · focus trends · smart insights</div>
+            </div>
+
+            <!-- stats row (dynamic) -->
+            <div class="stats-row" id="statsRow">
+                <div class="stat-block"><div class="stat-number" id="totalFocus">0</div><div class="stat-label">focus hrs</div></div>
+                <div class="stat-block"><div class="stat-number" id="tasksDone">0</div><div class="stat-label">tasks done</div></div>
+                <div class="stat-block"><div class="stat-number" id="currentStreak">0</div><div class="stat-label">day streak</div></div>
+                <div class="stat-block"><div class="stat-number" id="focusScore">0%</div><div class="stat-label">focus score</div></div>
+            </div>
+
+            <!-- charts grid (2 overlapping cards) -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title"><span>📅</span> weekly focus (hours)</div>
+                    <canvas id="weeklyChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><span>🥧</span> task breakdown</div>
+                    <canvas id="taskPieChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- focus breakdown (progress bars) -->
+            <div class="breakdown-card">
+                <div class="breakdown-title">🔍 focus quality by category</div>
+                <div class="progress-item">
+                    <span class="progress-label">Deep work</span>
+                    <div class="progress-bar-bg"><div class="progress-fill" id="deepProgress" style="width: 78%"></div></div>
+                    <span class="progress-percent" id="deepPercent">78%</span>
+                </div>
+                <div class="progress-item">
+                    <span class="progress-label">Quick review</span>
+                    <div class="progress-bar-bg"><div class="progress-fill" id="reviewProgress" style="width: 52%"></div></div>
+                    <span class="progress-percent" id="reviewPercent">52%</span>
+                </div>
+                <div class="progress-item">
+                    <span class="progress-label">Breaks</span>
+                    <div class="progress-bar-bg"><div class="progress-fill" id="breakProgress" style="width: 95%"></div></div>
+                    <span class="progress-percent" id="breakPercent">95%</span>
+                </div>
+                <p style="margin-top: 2rem; color: #333; border-top: 1px dashed #111; padding-top: 1.5rem;">✨ consistency is key — you're doing great.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <span>© 2026 FocusBuddy AI · analytics dashboard</span>
+            <span><a href="#">about</a> · <a href="#">privacy</a></span>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // ---------- ANALYTICS DATA (simulated, but dynamic) ----------
+            // In a real app, this would come from backend/localStorage. We'll generate meaningful but random-ish stats.
+
+            // generate random study data (but stable on each load)
+            function getRandomBetween(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // weekly hours (mon-sun)
+            const weeklyData = [
+                getRandomBetween(3, 7),
+                getRandomBetween(4, 8),
+                getRandomBetween(2, 6),
+                getRandomBetween(5, 9),
+                getRandomBetween(4, 7),
+                getRandomBetween(2, 5),
+                getRandomBetween(1, 4)
+            ];
+
+            // total focus hours
+            const totalFocusHrs = weeklyData.reduce((a, b) => a + b, 0);
+            document.getElementById('totalFocus').innerText = totalFocusHrs;
+
+            // tasks done
+            const tasksDone = getRandomBetween(28, 45);
+            document.getElementById('tasksDone').innerText = tasksDone;
+
+            // streak
+            const streak = getRandomBetween(7, 24);
+            document.getElementById('currentStreak').innerText = streak;
+
+            // focus score (percentage)
+            const focusScore = getRandomBetween(68, 94);
+            document.getElementById('focusScore').innerText = focusScore + '%';
+
+            // progress percentages for categories
+            const deepPercent = getRandomBetween(65, 88);
+            const reviewPercent = getRandomBetween(45, 70);
+            const breakPercent = getRandomBetween(80, 98);
+
+            document.getElementById('deepProgress').style.width = deepPercent + '%';
+            document.getElementById('deepPercent').innerText = deepPercent + '%';
+            document.getElementById('reviewProgress').style.width = reviewPercent + '%';
+            document.getElementById('reviewPercent').innerText = reviewPercent + '%';
+            document.getElementById('breakProgress').style.width = breakPercent + '%';
+            document.getElementById('breakPercent').innerText = breakPercent + '%';
+
+            // pie chart data: task categories (study, personal, health) - for demo we use 0,1,2 like tasks page
+            const taskCategories = [getRandomBetween(12, 25), getRandomBetween(8, 18), getRandomBetween(5, 15)];
+
+            // ---------- CHARTS INIT ----------
+            // Weekly chart
+            const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+            new Chart(ctxWeekly, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'focus hours',
+                        data: weeklyData,
+                        backgroundColor: '#111',
+                        borderColor: '#111',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        barPercentage: 0.7,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#ccc' },
+                            border: { color: '#111' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            border: { color: '#111' }
+                        }
+                    }
+                }
+            });
+
+            // Task pie chart (study / personal / health)
+            const ctxPie = document.getElementById('taskPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Deep work', 'Quick review', 'Breaks'],
+                    datasets: [{
+                        data: taskCategories,
+                        backgroundColor: ['#111', '#444', '#777'],
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#111', font: { weight: 'bold' } } }
+                    },
+                    cutout: '65%',
+                }
+            });
+
+            // optional: add micro interaction to update stats based on localStorage? but static is fine for demo.
+            // we can also add a randomize button? not needed for analytics purity.
+
+            // update stats numbers with animation (simple)
+            function animateValue(element, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    element.innerText = Math.floor(progress * (end - start) + start) + (element.id === 'focusScore' ? '%' : '');
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        element.innerText = end + (element.id === 'focusScore' ? '%' : '');
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // slight animation to make it feel alive
+            window.addEventListener('load', () => {
+                animateValue(document.getElementById('totalFocus'), 0, totalFocusHrs, 800);
+                animateValue(document.getElementById('tasksDone'), 0, tasksDone, 800);
+                animateValue(document.getElementById('currentStreak'), 0, streak, 800);
+                animateValue(document.getElementById('focusScore'), 0, focusScore, 800);
+            });
+
+        })();
+    </script>
+</body>
+</html>

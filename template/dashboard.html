@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusBuddy AI · pure HTML/CSS</title>
+    <!-- no frameworks, no bloat, just clean black/white design -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fff;
+            color: #111;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* black & white theme, no extra libraries */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ----- navigation (pure css) ----- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            background: #fff;
+            border-bottom: 3px solid #111;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            color: #111;
+        }
+
+        .logo i { /* fake icon using unicode */
+            font-style: normal;
+            margin-right: 4px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #111;
+            font-weight: 500;
+            padding: 0.4rem 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            border-bottom-color: #111;
+        }
+
+        .nav-links .active {
+            border-bottom-color: #111;
+            font-weight: 700;
+        }
+
+        .btn-nav {
+            border: 2px solid #111;
+            background: #111;
+            color: #fff;
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        .btn-nav:hover {
+            background: #fff;
+            color: #111;
+        }
+
+        /* main content */
+        main {
+            flex: 1;
+            padding: 3rem 0;
+        }
+
+        /* flash messages (pure) */
+        .flash-message {
+            background: #fff;
+            border: 2px solid #111;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 50px;
+            box-shadow: 6px 6px 0 #111;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flash-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #111;
+            font-weight: bold;
+        }
+
+        /* cards (black/white style) */
+        .card {
+            background: #fff;
+            border: 2px solid #111;
+            border-radius: 40px;
+            padding: 2rem;
+            box-shadow: 12px 12px 0 #111;
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #111;
+            padding-bottom: 0.5rem;
+        }
+
+        /* buttons */
+        .btn {
+            display: inline-block;
+            border: 2px solid #111;
+            background: transparent;
+            color: #111;
+            padding: 0.7rem 2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #111;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            color: #111;
+        }
+
+        .btn-outline:hover {
+            background: #111;
+            color: #fff;
+        }
+
+        /* forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            border: 2px solid #111;
+            border-radius: 60px;
+            background: #fff;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            background: #fafafa;
+        }
+
+        /* grid helpers (minimal) */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        /* dashboard stats */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: #fff;
+            border: 2px solid #111;
+            border-radius: 30px;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 8px 8px 0 #111;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* table (for tasks) */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 1rem 0.5rem;
+            border-bottom: 2px solid #111;
+        }
+
+        .table td {
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* footer */
+        .footer {
+            background: #111;
+            color: #aaa;
+            padding: 2rem 0;
+            border-top: 4px solid #fff;
+            margin-top: 3rem;
+        }
+
+        .footer .container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- pure HTML/CSS navigation (no Flask logic here, but structure matches) -->
+    <nav class="navbar">
+        <div class="nav-links">
+            <!-- authenticated user view example (dashboard, tasks, etc) -->
+            <!-- <a href="#" class="active">Dashboard</a> -->
+            <!-- <a href="#">Tasks</a> -->
+            <!-- <a href="#">Schedule</a> -->
+            <!-- <a href="#">Analytics</a> -->
+            <!-- <a href="#" class="btn-nav">Logout</a> -->
+            <!-- for non-authenticated, you'd show Login/Register 
+            <a href="#">Login</a>
+            <a href="#" class="btn-nav">Register</a>
+            -->
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- flash message demo (pure) -->
+            <div class="flash-message">
+                <span><strong>✨</strong> Welcome back, Alex! You have 3 tasks due today.</span>
+                <button class="flash-close" onclick="this.parentElement.style.display='none'">✕</button>
+            </div>
+
+            <!-- page title block (varies per page) -->
+            <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">Dashboard</h1>
+            <p style="font-size: 1.2rem; color: #333; border-left: 6px solid #111; padding-left: 1.5rem; margin-bottom: 3rem;">
+                Overview of your study progress
+            </p>
+
+            <!-- stats grid (example) -->
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">tasks done</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8.5</div>
+                    <div class="stat-label">study hours</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">94%</div>
+                    <div class="stat-label">focus score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">day streak</div>
+                </div>
+            </div>
+
+            <!-- two column row (tasks + upcoming) -->
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-title">📋 Today's tasks</div>
+                        <table class="table">
+                            <tr><th>Task</th><th>Status</th></tr>
+                            <tr><td>Review math chapter 4</td><td>✅ Done</td></tr>
+                            <tr><td>AI flashcards</td><td>⏳ Pending</td></tr>
+                            <tr><td>Physics problem set</td><td>⏳ Pending</td></tr>
+                        </table>
+                        <a href="#" class="btn btn-outline" style="margin-top:1.5rem;">+ Add task</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-title">📅 Upcoming schedule</div>
+                        <ul style="list-style: none;">
+                            <li style="padding:0.8rem 0; border-bottom:1px solid #ccc;">🔹 10:00 AM · Study group</li>
+                            <li style="padding:0.8rem 0; border-bottom:1px solid #ccc;">🔹 2:00 PM · AI coach session</li>
+                            <li style="padding:0.8rem 0;">🔹 5:00 PM · Review notes</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline" style="margin-top:1.5rem;">View full schedule</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- extra card for analytics preview -->
+            <div class="card">
+                <div class="card-title">📊 Weekly progress</div>
+                <p style="margin-bottom: 1.5rem;">Your study consistency is up 23% compared to last week.</p>
+                <!-- fake chart using pure css (just visual) -->
+                <div style="display: flex; gap: 1rem; align-items: flex-end; height: 150px; margin: 2rem 0;">
+                    <div style="background: #111; width: 40px; height: 90px;"></div>
+                    <div style="background: #111; width: 40px; height: 120px;"></div>
+                    <div style="background: #111; width: 40px; height: 80px;"></div>
+                    <div style="background: #111; width: 40px; height: 140px;"></div>
+                    <div style="background: #111; width: 40px; height: 110px;"></div>
+                    <div style="background: #111; width: 40px; height: 160px;"></div>
+                    <div style="background: #111; width: 40px; height: 100px;"></div>
+                </div>
+                <a href="#" class="btn btn-primary">View detailed analytics</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- footer -->
+    <footer class="footer">
+        <div class="container">
+            <span>© 2026 FocusBuddy AI · pure HTML/CSS version</span>
+            <span>
+                <a href="#">Privacy</a> · <a href="#">Terms</a>
+            </span>
+        </div>
+    </footer>
+
+    <!-- tiny script to handle flash close (pure js, no frameworks) -->
+    <script>
+        document.querySelectorAll('.flash-close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
