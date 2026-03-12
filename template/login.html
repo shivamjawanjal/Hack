@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusBuddy AI · login & register</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* main split container */
+        .auth-container {
+            display: flex;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        /* left panel — black / brand with video */
+        .auth-brand {
+            flex: 1;
+            background: #111;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .brand-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            opacity: 0.2;
+            filter: grayscale(1) contrast(1.4);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 3;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .brand-logo {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #ccc 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-tagline {
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 2rem;
+        }
+
+        .brand-quote {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            border-left: 4px solid #fff;
+            padding-left: 1.5rem;
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 32px;
+            backdrop-filter: blur(4px);
+        }
+
+        .mini-marquee {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            color: #aaa;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+        }
+
+        .mini-marquee span {
+            display: inline-block;
+            animation: scrollMini 14s linear infinite;
+        }
+
+        @keyframes scrollMini {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* right panel — white, contains both forms with toggle */
+        .auth-forms-panel {
+            flex: 1;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-left: 1px solid #eee;
+        }
+
+        .form-card {
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .form-card h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #000;
+        }
+
+        .form-card .welcome {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 2rem;
+            border-left: 3px solid #111;
+            padding-left: 1rem;
+        }
+
+        /* form toggle buttons (login / register) */
+        .form-toggler {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.8rem;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #aaa;
+            cursor: pointer;
+            padding: 0.2rem 0;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .toggle-btn.active {
+            color: #111;
+            border-bottom-color: #111;
+        }
+
+        /* forms (only one visible at a time) */
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active-form {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #222;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .input-icon input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #ddd;
+            border-radius: 60px;
+            font-size: 1rem;
+            background: #fff;
+            transition: 0.2s;
+            outline: none;
+        }
+
+        .input-icon input:focus {
+            border-color: #111;
+        }
+
+        .forgot-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0 2rem;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+        }
+
+        .forgot-link {
+            color: #111;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dotted #111;
+        }
+
+        .btn-login, .btn-register {
+            width: 100%;
+            background: #111;
+            color: #fff;
+            border: 2px solid #111;
+            padding: 1rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-login:hover, .btn-register:hover {
+            background: transparent;
+            color: #111;
+        }
+
+        .signup-link, .login-link {
+            text-align: center;
+            color: #444;
+        }
+
+        .signup-link a, .login-link a {
+            color: #111;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px solid #111;
+            cursor: pointer;
+        }
+
+        .hr-line {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #aaa;
+            margin: 2rem 0;
+        }
+
+        .hr-line hr {
+            flex: 1;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            background: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            padding: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .social-btn:hover {
+            background: #111;
+            color: #fff;
+            border-color: #111;
+        }
+
+        .social-btn:hover i {
+            color: #fff;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* name fields side by side for register */
+        .name-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .name-row .input-group {
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .auth-container {
+                flex-direction: column;
+            }
+            .auth-brand {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <!-- LEFT: black brand panel (same for both) -->
+    <div class="auth-brand">
+        <video class="brand-video-bg" autoplay muted loop playsinline>
+            <source src="https://videos.pexels.com/video-files/3129671/3129671-uhd_3840_2160_25fps.mp4" type="video/mp4">
+        </video>
+        <div class="brand-content">
+            <div class="brand-logo">FocusBuddy AI</div>
+            <div class="brand-tagline">Your smart study planner & productivity coach</div>
+            <div class="brand-quote">
+                <i class="fas fa-quote-left"></i> The only AI that truly understands student flow. 
+                <span style="display:block; margin-top:1rem;">— 150K+ students</span>
+            </div>
+        </div>
+        <div class="mini-marquee">
+            <span>✧ AI STUDY PLANNER ✧ AWARD 2026 ✧ PRODUCTIVITY BOOST ✧ AI COACH ✧  &nbsp;&nbsp;&nbsp; </span>
+            <span>✧ AI STUDY PLANNER ✧ AWARD 2026 ✧ PRODUCTIVITY BOOST ✧ AI COACH ✧  &nbsp;&nbsp;&nbsp; </span>
+        </div>
+    </div>
+
+    <!-- RIGHT: forms panel with toggle -->
+    <div class="auth-forms-panel">
+        <div class="form-card">
+            <!-- toggle buttons -->
+            <div class="form-toggler">
+                <button class="toggle-btn active" id="btnLoginTab">Log in</button>
+                <button class="toggle-btn" id="btnRegisterTab">Register</button>
+            </div>
+
+            <!-- LOGIN FORM (active by default) -->
+            <div id="loginForm" class="auth-form active-form">
+                <h2>Welcome back</h2>
+                <div class="welcome">Log in to continue your smart study journey</div>
+                <form>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="student@example.com" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="forgot-row">
+                        <label class="remember">
+                            <input type="checkbox" checked> Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn-login">Log in</button>
+                    <div class="signup-link">
+                        New to FocusBuddy? <a id="switchToRegister">Create an account</a>
+                    </div>
+                    <div class="hr-line"><hr><span>or</span><hr></div>
+                    <div class="social-buttons">
+                        <div class="social-btn"><i class="fab fa-google"></i> Google</div>
+                        <div class="social-btn"><i class="fab fa-apple"></i> Apple</div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- REGISTER FORM (hidden initially) -->
+            <div id="registerForm" class="auth-form">
+                <h2>Join FocusBuddy</h2>
+                <div class="welcome">Start your AI‑powered study journey</div>
+                <form>
+                    <div class="name-row">
+                        <div class="input-group">
+                            <label>First name</label>
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" placeholder="Alex" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Last name</label>
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" placeholder="Chen" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="student@example.com" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="Create a password" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Confirm password</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+                    <label class="remember" style="margin: 1rem 0 2rem; display: flex; gap:0.5rem;">
+                        <input type="checkbox" required> I agree to the <a href="#" style="color:#111; font-weight:600;">Terms</a> and <a href="#" style="color:#111; font-weight:600;">Privacy</a>.
+                    </label>
+                    <button type="submit" class="btn-register">Create account</button>
+                    <div class="login-link">
+                        Already have an account? <a id="switchToLogin">Log in</a>
+                    </div>
+                    <div class="hr-line"><hr><span>or</span><hr></div>
+                    <div class="social-buttons">
+                        <div class="social-btn"><i class="fab fa-google"></i> Google</div>
+                        <div class="social-btn"><i class="fab fa-apple"></i> Apple</div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="footer-note">
+                © 2026 FocusBuddy AI. All rights reserved.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simple JavaScript to toggle forms + active tab -->
+<script>
+    (function() {
+        const loginTab = document.getElementById('btnLoginTab');
+        const registerTab = document.getElementById('btnRegisterTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+
+        function activateLogin() {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.add('active-form');
+            registerForm.classList.remove('active-form');
+        }
+
+        function activateRegister() {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.add('active-form');
+            loginForm.classList.remove('active-form');
+        }
+
+        // tab clicks
+        loginTab.addEventListener('click', activateLogin);
+        registerTab.addEventListener('click', activateRegister);
+
+        // inline links inside forms
+        if (switchToRegister) {
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                activateRegister();
+            });
+        }
+        if (switchToLogin) {
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                activateLogin();
+            });
+        }
+    })();
+</script>
+</body>
+</html>
